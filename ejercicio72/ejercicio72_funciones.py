@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-tabla = pd.read_csv('c:/nueva/ejercicio72/listado_deudas_paises1.csv', sep=';', decimal=',')
+tabla = pd.read_csv('c:/nueva/ejercicio72/listado_deudas_paises.csv', sep=';', decimal=',')
 
 copiatabla = tabla.drop(columns=['Pais','Tipo'])
 copiatabla['PaisId'] = copiatabla['PaisId'].astype(str)
@@ -16,12 +16,14 @@ def dict_pais (pais,fecha):
     filtradopais = (copiatabla['PaisId'] == pais) & (copiatabla['Fecha'] == fecha) & ((copiatabla['TipoId'] == 'Deuda interna') | (copiatabla['TipoId'] == 'Deuda externa') | (copiatabla['TipoId'] == 'Deuda en moneda local') | (copiatabla['TipoId'] == 'Deuda en moneda extranjera') | (copiatabla['TipoId'] == 'Deuda a largo plazo') | (copiatabla['TipoId'] == 'Deuda a corto plazo'))
     dictpais = copiatabla.loc[filtradopais]
     dict_pais = dictpais.to_dict()
+    argtabla = pd.DataFrame(dict_pais)
+    argtabla.to_csv('c:/nueva/ejercicio72/argtabla.csv', sep=';', decimal=',', index=True)
 
     return dict_pais
 
-resultado = dict_pais(pais1,fecha1)
+#resultado = dict_pais(pais1,fecha1)
 
-argtabla = pd.DataFrame(resultado)
+#argtabla = pd.DataFrame(resultado)
 
 deuda = 'Deuda externa'
 
@@ -30,12 +32,14 @@ def deuda_paises(deuda,fecha):
     filtrado = (copiatabla['TipoId'] == deuda) & (copiatabla['Fecha'] == fecha)
     dictdeuda = copiatabla.loc[filtrado]
     dict_deuda = dictdeuda.to_dict()
+    deuda_paises_tabla = pd.DataFrame(dict_deuda)
+    deuda_paises_tabla.to_csv('c:/nueva/ejercicio72/deuda_paises.csv', sep=';', decimal=',', index=True)
 
     return dict_deuda
 
-resultado1 = deuda_paises(deuda,fecha1)
+#resultado1 = deuda_paises(deuda,fecha1)
 
-deuda_paises_tabla = pd.DataFrame(resultado1)
+#deuda_paises_tabla = pd.DataFrame(resultado1)
 
 def diagrama_deuda(pais,fecha):
 
@@ -47,11 +51,12 @@ def diagrama_deuda(pais,fecha):
     plt.plot(argfiltrado['Cantidad'],label= 'Deuda Interna')
     plt.plot(argfiltrado['Cantidad'],label= 'Deuda Externa')
     plt.legend(title='Tipo de deuda', loc='best')
+    plt.savefig("C:/nueva/ejercicio72/diagrama_deuda_arg.png")
     plt.show()
 
     #return argfiltrado
 
-resultado2 = diagrama_deuda(pais1,fecha1)
+#resultado2 = diagrama_deuda(pais1,fecha1)
 
 def diagrama_tipo_deuda(pais,fecha):
 
@@ -64,9 +69,10 @@ def diagrama_tipo_deuda(pais,fecha):
     plt.ylabel('Cantidad')
     plt.xticks(rotation=90)
     plt.tight_layout()
+    plt.savefig("C:/nueva/ejercicio72/diagrama_tipodeuda_arg.png")
     plt.show()
 
-resultado3 = diagrama_tipo_deuda(pais1,fecha1)
+#resultado3 = diagrama_tipo_deuda(pais1,fecha1)
 
 #copiatabla['PaisId'] = copiatabla['PaisId'].astype(str)
 filtro = (copiatabla['PaisId'] == 'ARG') | (copiatabla['PaisId'] == 'BRA') | (copiatabla['PaisId'] == 'MEX') | (copiatabla['PaisId'] == 'ESP')
@@ -78,8 +84,6 @@ listadeudas = copiatabla.loc[filtrodeudas, 'TipoId'].unique().tolist()
 
 #filtroanios = ((copiatabla['Fecha'] == '1995Q1') | (copiatabla['Fecha'] == '2000Q1') | (copiatabla['Fecha'] == '2005Q1') | (copiatabla['Fecha'] == '2010Q1') | (copiatabla['Fecha'] == '2015Q1') | (copiatabla['Fecha'] == '2019Q1'))
 #listaanios = copiatabla.loc[filtroanios, 'Fecha'].unique().tolist()
-
-
 
 def diagrama_tipo_paises(lista,tipo):
 
@@ -101,38 +105,49 @@ def diagrama_tipo_paises(lista,tipo):
     plt.xticks(rotation=90)
     plt.legend(title='Paises', loc='best')
     plt.tight_layout()
+    plt.savefig("C:/nueva/ejercicio72/diagrama_tipodeuda_paises.png")
     plt.show()
 
     #return linea_arg
 
-resultado4 = diagrama_tipo_paises(cuatropaises,deuda)
+#resultado4 = diagrama_tipo_paises(cuatropaises,deuda)
 
 #print(resultado4)
 
 def pais_deudas(pais,tipodeuda):
 
-    filtradopais = copiatabla[copiatabla.PaisId.isin(pais) & copiatabla.TipoId.isin(tipodeuda)]
-
+    filtradopais = copiatabla[copiatabla.PaisId.isin(pais)]
+    
+    #print(filtradopais['TipoId'])
     for tipo_deuda in tipodeuda:
-
-        plt.plot(filtradopais.index, filtradopais[tipo_deuda], label='tipo_de_deuda')
-    #deuda_interna = filtrado.loc[filtrado['TipoId'] == 'Deuda interna', 'Cantidad']
-    #plt.plot(filtrado['Fecha'], (filtrado.loc[filtrado['TipoId'] == 'Deuda externa','Cantidad']),label='Deuda externa')
-    #plt.plot(filtrado['Fecha'], (filtrado.loc[filtrado['TipoId'] == 'Deuda interna','Cantidad']), label='Deuda interna')
-    #plt.plot(filtrado['Fecha'], (filtrado.loc[filtrado['TipoId'] == 'Deuda a largo plazo','Cantidad']), label='Deuda a largo plazo')
+        
+        filtradotipo = filtradopais[filtradopais['TipoId'] == tipo_deuda]
+        plt.plot(filtradotipo['Fecha'], filtradotipo['Cantidad'], label= tipo_deuda)
+    
     plt.title('Evolucion de los tipos de deudas de Argentina')
     plt.legend(title='Tipos de deuda', loc='best')
     plt.xlabel('Fecha')
     plt.ylabel('Cantidad')
     plt.xticks(rotation=90)
     plt.tight_layout()
+    plt.savefig("C:/nueva/ejercicio72/diagrama_tipodeuda_pais.png")
     plt.show()
 
-    #return deuda_interna
+#resultado5 = pais_deudas(['ARG'], ['Deuda interna','Deuda externa','Deuda a largo plazo'])
 
-resultado5 = pais_deudas(['ARG'], ['Deuda interna','Deuda externa','Deuda a largo plazo'])
+def diagrama_de_cajas(paises,tipodeuda):
 
-#print(resultado5)
+    filtrado = copiatabla[copiatabla['PaisId'].isin(paises) & copiatabla['TipoId'].isin(tipodeuda)]
+    filtrado.boxplot(column='Cantidad', by=['PaisId','TipoId'], figsize=(10,6))
+    plt.xlabel("País y Tipo de Deuda")
+    plt.ylabel("Deuda")
+    plt.title("Diagrama de Cajas de Deudas por País y Tipo de Deuda")
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig("C:/nueva/ejercicio72/diagrama_cajas_paises.png")
+    plt.show()
+
+#resultado6 = diagrama_de_cajas(['ARG','RUS','AUS','USA'],['Deuda interna','Deuda externa','Deuda a largo plazo'])
 
 
 
